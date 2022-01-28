@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
-import study.querydsl.dto.MemberDto;
-import study.querydsl.dto.QMemberDto;
-import study.querydsl.dto.UserDto;
+import study.querydsl.dto.*;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -376,14 +374,13 @@ public class QuerydslBasicTest {
 
     @Test
     public void concat() {
-        final List<String> result = queryFactory
+        String s = queryFactory
                 .select(member.username.concat("_").concat(member.age.stringValue()))
                 .from(member)
-                .where(member.username.eq("member1"))
-                .fetch();
+                .where(member.id.eq(Long.valueOf(3)))
+                .fetchFirst();
 
-        result.forEach(System.out::println);
-        assertEquals("member1_10", result.get(0));
+        assertEquals("member1_10", s);
     }
 
     @Test

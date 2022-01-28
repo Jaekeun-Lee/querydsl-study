@@ -10,6 +10,7 @@ import study.querydsl.TestHelper;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.QMember;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static study.querydsl.entity.QMember.member;
 
 @SpringBootTest
 @Transactional
@@ -74,10 +76,41 @@ class MemberRepositoryTest {
         MemberSearchCondition condition = new MemberSearchCondition();
 
         PageRequest of = PageRequest.of(0, 3);
+        // fetch()
         Page<MemberTeamDto> memberTeamDtos = memberRepository.searchPageSimple(condition, of);
+
+        memberTeamDtos.getContent().forEach(System.out::println);
+        System.out.println(memberTeamDtos.getTotalPages());
+        System.out.println(memberTeamDtos.getTotalElements());
 
         assertEquals(3, memberTeamDtos.getSize());
 
+        // fetchResult()
+        Page<MemberTeamDto> memberTeamDtos1 = memberRepository.searchPageUsingFetchResult(condition, of);
+        memberTeamDtos.getContent().forEach(System.out::println);
+        System.out.println(memberTeamDtos1.getTotalPages());
+        System.out.println(memberTeamDtos1.getTotalElements());
+
+    }
+
+    @Test
+    public void searchComplex() {
+        MemberSearchCondition condition = new MemberSearchCondition();
+
+        PageRequest of = PageRequest.of(0, 3);
+
+        Page<MemberTeamDto> memberTeamDtos = memberRepository.searchComplex(condition, of);
+        memberTeamDtos.getContent().forEach(System.out::println);
+        System.out.println(memberTeamDtos.getTotalPages());
+        System.out.println(memberTeamDtos.getTotalElements());
+
+
+    }
+
+    @Test
+    public void querydslPredicateExecutorTest() {
+        Iterable<Member> member4 = memberRepository.findAll(member.age.between(20, 40).and(member.username.eq("member4")));
+        member4.forEach(System.out::println);
     }
 
 }
